@@ -21,16 +21,16 @@ def TraceAbaques(v, vp, geom, fck, fyk, epsilonuk, Aciers, soll=[[], []], bNonSy
     h = v + vp
     [eps0, ki] = VecteurAbaquesNM(v, vp, d, dp, fck, epsilonuk, bNonSymetrique, nbpts)
     [eps0p, kip] = PointsParticuliersAbaquesNM(v, vp, d, dp, fck, epsilonuk, bNonSymetrique)
-    NMr = np.array([NM_C_S(eps0C, kiC, v, vp, geom, fck, fyk, Aciers) for eps0C, kiC in zip(eps0, ki)])
-    NMrPt = np.array([NM_C_S(eps0C, kiC, v, vp, geom, fck, fyk, Aciers) for eps0C, kiC in zip(eps0p, kip)])
+    n_mr = np.array([NM_C_S(eps0C, kiC, v, vp, geom, fck, fyk, Aciers) for eps0C, kiC in zip(eps0, ki)])
+    n_mr_pt = np.array([NM_C_S(eps0C, kiC, v, vp, geom, fck, fyk, Aciers) for eps0C, kiC in zip(eps0p, kip)])
     plt.figure()
-    plt.plot(NMr[:, 0], NMr[:, 1], 'b')
-    plt.plot(NMrPt[:, 0], NMrPt[:, 1], 'g*')
-    plt.plot(NMr[:, 0] + NMr[:, 2], NMr[:, 1] + NMr[:, 3], 'r-')
-    plt.plot(NMrPt[:, 0] + NMrPt[:, 2], NMrPt[:, 1] + NMrPt[:, 3], 'g*')
+    plt.plot(n_mr[:, 0], n_mr[:, 1], 'b')
+    plt.plot(n_mr_pt[:, 0], n_mr_pt[:, 1], 'g*')
+    plt.plot(n_mr[:, 0] + n_mr[:, 2], n_mr[:, 1] + n_mr[:, 3], 'r-')
+    plt.plot(n_mr_pt[:, 0] + n_mr_pt[:, 2], n_mr_pt[:, 1] + n_mr_pt[:, 3], 'g*')
     # placement des sollicitations
-    NEdu, MEdu = soll
-    plt.plot(NEdu, MEdu, 'r*')
+    n_edu, m_edu = soll
+    plt.plot(n_edu, m_edu, 'r*')
     plt.grid('on')
     plt.xlabel(r'$N_{Rd}$ [MN]')
     plt.ylabel(r'$M_{Rd}$ [MN.m]')
@@ -38,7 +38,7 @@ def TraceAbaques(v, vp, geom, fck, fyk, epsilonuk, Aciers, soll=[[], []], bNonSy
         v, vp, bw = geom["RECT"]
         plt.title(u"Abaque d'interaction d'une section rectangulaire - {: .0f}x{: .0f} mm2".format(bw * 1e3, h * 1e3))
         plt.savefig('./images/AbaqueInteractionRect-{:.0f}x{:.0f}.pdf'.format(bw * 1e3, h * 1e3))
-    return [NMr, NMrPt]
+    return [n_mr, n_mr_pt]
 
 
 def NM_C_S(eps0, ki, v, vp, geom, fck, fyk, Aciers):
@@ -101,44 +101,3 @@ def Mc(eps0, ki, v, vp, geom, fck):
         return -(b(y, geom) * MAT.sigmac2(eps0 + ki * y, fck) * y)
 
     return quad(integrand, -vp, v, args=(eps0, ki, fck, geom))[0]
-
-# def TraceAbaquesNormalise(v, vp, geom, fck, fyk, epsilonuk, Aciers, soll=[[], []], bNonSymetrique=False,
-#                           nbpts=[100, 100, 100]):
-#     fcd1, fyd1 = MAT.fcd(fck), MAT.fyd(fyk)
-#     d, dp = v - min(Aciers[:, 0]), vp - max(Aciers[:, 0])
-#     h = v + vp
-#     [eps0, ki] = VecteurAbaquesNM(v, vp, d, dp, fck, epsilonuk, bNonSymetrique, nbpts)
-#     [eps0p, kip] = PointsParticuliersAbaquesNM(v, vp, d, dp, fck, epsilonuk, bNonSymetrique)
-#     NMr = np.array([NM_C_S(eps0C, kiC, v, vp, geom, fck, fyk, Aciers) for eps0C, kiC in zip(eps0, ki)])
-#     NMrPt = np.array([NM_C_S(eps0C, kiC, v, vp, geom, fck, fyk, Aciers) for eps0C, kiC in zip(eps0p, kip)])
-#     if ("RECT" in geom) or ("CIRC" in geom):
-#         Astot = sum(Aciers[:, 0])
-#         if "RECT" in geom:
-#             v, vp, bw = geom["RECT"]
-#         if "CIRC" in geom:
-#             v, vp, R = geom["CIRC"]
-#             bw = math.pi * R / 2.
-#         [nurc, murc, nurs, murs] = [NMr[:, 0] / bw / h / fcd1,
-#                                     NMr[:, 1] / bw / h / h / fcd1,
-#                                     NMr[:, 2] / Astot / fyd1,
-#                                     NMr[:, 3] / Astot / h / fyd1]
-#         [nurcPt, murcPt, nursPt, mursPt] = [NMrPt[:, 0] / bw / h / fcd1, NMrPt[:, 1] / bw / h / h / fcd1,
-#                                             NMrPt[:, 2] / Astot / fyd1,
-#                                             NMrPt[:, 3] / h / Astot / fyd1]
-#         n1, n2 = [nurc, murc, nurs, murs], [nurcPt, murcPt, nursPt, mursPt]
-#         # courbes normalisées
-#         plt.figure()
-#         omega1 = Astot * fyd1 / (bw * h * fcd1)
-#         nbCourbes = 20.
-#         nu1 = nurc + omega1 * nurs
-#         mu1 = murc + omega1 * murs
-#         plt.plot(nu1, mu1, 'r-')
-#         for i in range(int(nbCourbes) + 1):
-#             omega = i / nbCourbes
-#         # courbes
-#         nu1 = nurc + omega * nurs
-#         mu1 = murc + omega * murs
-#         plt.plot(nu1, mu1, 'b-')  # points particuliers
-#         nu1Pt = nurcPt + omega * nursPt
-#         mu1Pt = murcPt + omega * mursPt
-#         plt.plot(nu1Pt, mu1Pt, 'r.')
