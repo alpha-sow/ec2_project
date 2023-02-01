@@ -21,7 +21,7 @@ def PointsParticuliersAbaquesNM(v, vp, d, dp, fck, epsilonuk, bNonSymetrique=Fal
     eps0 = [(epsud * v - epsP1 * (v - d)) / d for epsP1 in eps_p]
 
     # zone 2, pivot B, flexion simple, flexion composée
-    eps_m2 = (epsud * v + epscu2 * (v - d)) / d + (epscu2 + epsud) / d * vp
+    eps_m2 = (epsud * v + epscu2 * (v - d)) / d - (epscu2 + epsud) / d * vp
     eps_m = [eps_m2, 0]
     ki = np.append(ki, [(epscu2 - epsM21) / h for epsM21 in eps_m])
     eps0 = np.append(eps0, [(epscu2 * vp + epsM21 * v) / h for epsM21 in eps_m])
