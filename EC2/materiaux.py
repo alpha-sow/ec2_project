@@ -64,4 +64,5 @@ def epsilonc2(fck):
 
 
 def npuiss(fck):
-    return 2.0
+    if fck < 50:
+        return 2.0

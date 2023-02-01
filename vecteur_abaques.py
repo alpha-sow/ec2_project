@@ -26,7 +26,7 @@ def VecteurAbaquesNM(v, vp, d, dp, fck, epsilonuk, bNonSymetrique=False, nbpts=N
 
     # zone 2, pivot B, flexion simple, flexion composée
     eps_m2 = (epsud * v + epscu2 * (v - d)) / d + (epscu2 + epsud) / d * vp
-    eps_m = np.linspace(eps_m2, 0, nbpts_z2)
+    eps_m = np.linspace(- eps_m2, 0, nbpts_z2)
     ki = np.append(ki, [(epscu2 - epsM21) / h for epsM21 in eps_m])
     eps0 = np.append(eps0, [(epscu2 * vp + epsM21 * v) / h for epsM21 in eps_m])
 
