@@ -7,7 +7,7 @@ from points_particuliers import PointsParticuliersAbaquesNM
 from vecteur_abaques import VecteurAbaquesNM
 
 
-def TraceAbaques(v, vp, geom, fck, fyk, epsilonuk, Aciers, soll=[[], []], bNonSymetrique=False, nbpts=[100, 100, 100]):
+def TraceAbaques(v, vp, geom, fck, fyk, epsilonuk, Aciers, soll=None, bNonSymetrique=False, nbpts=None):
     """
         tracé de l'abaque d'interaction pour la section
         entrée : section_height_gravity, section_width_gravity, geometrie_section [m], resistance_beton,
@@ -17,6 +17,10 @@ def TraceAbaques(v, vp, geom, fck, fyk, epsilonuk, Aciers, soll=[[], []], bNonSy
         geometrie_section est un dictionnaire pour
         geometrie_section = {"RECT": [section_height_gravity, section_width_gravity, section_width]}
     """
+    if nbpts is None:
+        nbpts = [100, 100, 100]
+    if soll is None:
+        soll = [[], []]
     d, dp = v - min(Aciers[:, 0]), vp - max(Aciers[:, 0])
     h = v + vp
     [eps0, ki] = VecteurAbaquesNM(v, vp, d, dp, fck, epsilonuk, bNonSymetrique, nbpts)
@@ -71,8 +75,8 @@ def b(y, geom):
         else:
             return bw
     if "CIRC" in geom:
-        v, vp, R = geom["CIRC"]
-        return 2. * (R * R - y * y) ** .5
+        v, vp, r = geom["CIRC"]
+        return 2. * (r * r - y * y) ** .5
     raise ValueError("Cle non reconnue dans b")
 
 
@@ -84,8 +88,8 @@ def Nc(eps0, ki, v, vp, geom, fck):
         sortie : [MN]
     """
 
-    def integrand(y, eps0, ki, fck, geom):
-        return b(y, geom) * MAT.sigmac2(eps0 + ki * y, fck)
+    def integrand(y, eps0_i, ki_i, fck_i, geom_i):
+        return b(y, geom_i) * MAT.sigmac2(eps0_i + ki_i * y, fck_i)
 
     return quad(integrand, -vp, v, args=(eps0, ki, fck, geom))[0]
 
@@ -97,7 +101,7 @@ def Mc(eps0, ki, v, vp, geom, fck):
         sortie : [MN]
     """
 
-    def integrand(y, eps0, ki, fck, geom):
-        return -(b(y, geom) * MAT.sigmac2(eps0 + ki * y, fck) * y)
+    def integrand(y, eps0_i, ki_i, fck_i, geom_i):
+        return -(b(y, geom_i) * MAT.sigmac2(eps0_i + ki_i * y, fck_i) * y)
 
     return quad(integrand, -vp, v, args=(eps0, ki, fck, geom))[0]
