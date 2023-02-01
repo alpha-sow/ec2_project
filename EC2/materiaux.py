@@ -3,7 +3,9 @@ import numpy as np
 
 
 def sigmac2(eps, fck):
-    """fonction parabolique en fonction du coefficient puissance entrée : fck:MPa, eps:[] sortie:MPa """
+    """
+        fonction parabolique en fonction du coefficient puissance entrée : fck:MPa, eps:[] sortie:MPa
+    """
     if eps >= 0:
         return 0  # pas de prise en compte de la traction
     elif eps >= - 2.0:
@@ -48,7 +50,8 @@ def epsilonud(epsilonuk):
 
 
 def epsiloncu2(fck):
-    return 3.5
+    if fck < 50:
+        return 3.5
 
 
 def fyd(fyk):
@@ -56,4 +59,5 @@ def fyd(fyk):
 
 
 def epsilonc2(fck):
-    return 2.0
+    if fck < 50:
+        return 2.0
