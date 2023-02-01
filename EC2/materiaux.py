@@ -8,10 +8,10 @@ def sigmac2(eps, fck):
     """
     if eps >= 0:
         return 0  # pas de prise en compte de la traction
-    elif eps >= - 2.0:
-        return -(1. - (1. + eps / 2.0) ** 12) * fcd(fck)
-    elif eps >= - 2.0:
-        return fcd(fck)
+    elif eps >= - epsilonc2(fck):
+        return -(1. - (1. + eps / epsilonc2(fck)) ** npuiss(fck)) * fcd(fck)
+    elif eps >= - epsiloncu2(fck):
+        return -fcd(fck)
     else:
         return 0.
 
@@ -61,3 +61,7 @@ def fyd(fyk):
 def epsilonc2(fck):
     if fck < 50:
         return 2.0
+
+
+def npuiss(fck):
+    return 2.0
