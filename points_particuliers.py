@@ -1,4 +1,3 @@
-import numpy
 import numpy as np
 import EC2.materiaux as MAT
 
@@ -37,19 +36,19 @@ def PointsParticuliersAbaquesNM(v, vp, d, dp, fck, epsilonuk, bNonSymetrique=Fal
         # partie inférieure si besoin
         # zone 3
         dcp = h * epsc2 / epscu2
-        epsP = [epsc2, 0]
-        ki = np.append(ki, [(epsP1 - epsc2) / dcp for epsP1 in epsP])
-        eps0 = np.append(eps0, [(epsc2 * v - epsP1 * (v - dcp)) / dcp for epsP1 in epsP])
+        eps_p = [epsc2, 0]
+        ki = np.append(ki, [(epsP1 - epsc2) / dcp for epsP1 in eps_p])
+        eps0 = np.append(eps0, [(epsc2 * v - epsP1 * (v - dcp)) / dcp for epsP1 in eps_p])
 
         # zone 2
-        epsP2 = (epsud * vp + epscu2 * (v - dp)) / (h - dp) + (epsud - epscu2) / (h - dp) * v
-        epsP = [0, epsP2]
-        ki = np.append(ki, [(epsP21 - epscu2) / h for epsP21 in epsP])
-        eps0 = np.append(eps0, [(epscu2 * v + epsP21 * vp) / h for epsP21 in epsP])
+        eps_p2 = (epsud * vp + epscu2 * (v - dp)) / (h - dp) + (epsud - epscu2) / (h - dp) * v
+        eps_p = [0, eps_p2]
+        ki = np.append(ki, [(epsP21 - epscu2) / h for epsP21 in eps_p])
+        eps0 = np.append(eps0, [(epscu2 * v + epsP21 * vp) / h for epsP21 in eps_p])
 
         # zone 1
-        epsM = [epscu2, epsud]
-        ki = np.append(ki, [(epsud - epsM1) / (h - dp) for epsM1 in epsM])
-        eps0 = np.append(eps0, [(epsud * vp + epsM1 * (v - dp)) / (h - dp) for epsM1 in epsM])
+        eps_m = [epscu2, epsud]
+        ki = np.append(ki, [(epsud - epsM1) / (h - dp) for epsM1 in eps_m])
+        eps0 = np.append(eps0, [(epsud * vp + epsM1 * (v - dp)) / (h - dp) for epsM1 in eps_m])
 
     return [eps0, ki]
