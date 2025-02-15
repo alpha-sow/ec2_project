@@ -9,6 +9,29 @@ from math import pi
 import EC2.BA as EC2
 from voile import TraceAbaques
 
+#matériaux
+fck = 25. #MPa, résistance caractéristique du béton
+fyk = 500. #MPa, résistance caractéristique de l'acier
+
+#géométrie
+bw, h = 0.25, 0.60 #m
+d, dp = 0.510, 0.05 #m
+
+#chargement Mg, Mq en MN.m
+sol = [[0.127, 0.059],
+[0.127, 0.250],]
+
+psi2 = 0.3
+print("ELU : ")
+for [Mg, Mq] in sol:
+    print("-----------------------------------------")
+    print("Mg = {0:.3f} MN.m - Mq = {1:.3f} MN.m".format(Mg, Mq))
+    MEdu = 1.35 * Mg + 1.5 * Mq
+    EC2.AsRectELU(MEdu, bw, d, dp, fck, fyk, True)
+print("-----------------------------------------")
+EC2.AsminRect(bw, d, fck, fyk, True)
+EC2.AsmaxRect(bw, h, True)
+
 print("Voile")
 bw = .25
 h = 2.500
